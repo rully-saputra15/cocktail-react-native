@@ -1,71 +1,111 @@
 import React from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Code,
-} from "native-base";
-import NativeBaseIcon from "./components/NativeBaseIcon";
+import { Center, extendTheme, NativeBaseProvider, } from "native-base";
+import CocktailApplication from "./src/CocktailApplication";
+import { SafeAreaProvider } from "react-native-safe-area-view";
+import AppLoading from 'expo-app-loading';
+import { useFonts,Rubik_300Light, Rubik_300Light_Italic, Rubik_400Regular,Rubik_400Regular_Italic,Rubik_500Medium,Rubik_500Medium_Italic,Rubik_700Bold,Rubik_700Bold_Italic } from '@expo-google-fonts/rubik';
+import { State } from "./src/stateManagement/state";
+import {persistReducer, persistStore} from "redux-persist";
+import thunkMiddleware from "redux-thunk";
+import {PersistConfig} from "redux-persist/es/types";
+import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { reducers } from "./src/stateManagement/reducer";
+import { applyMiddleware, createStore } from "redux";
+import {composeWithDevTools} from "redux-devtools-extension";
+import logger from "redux-logger";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 // Define the config
 const config = {
-  useSystemColorMode: false,
-  initialColorMode: "dark",
+  // useSystemColorMode: false,
+  // initialColorMode: "dark",
+  dependencies: {
+    'linear-gradient': require('expo-linear-gradient').LinearGradient
+  }
 };
 
 // extend the theme
-export const theme = extendTheme({ config });
-
-export default function App() {
-  return (
-    <NativeBaseProvider>
-      <Center
-        _dark={{ bg: "blueGray.900" }}
-        _light={{ bg: "blueGray.50" }}
-        px={4}
-        flex={1}
-      >
-        <VStack space={5} alignItems="center">
-          <NativeBaseIcon />
-          <Heading size="lg">Welcome to NativeBase</Heading>
-          <HStack space={2} alignItems="center">
-            <Text>Edit</Text>
-            <Code>App.tsx</Code>
-            <Text>and save to reload.</Text>
-          </HStack>
-          <Link href="https://docs.nativebase.io" isExternal>
-            <Text color="primary.500" underline fontSize={"xl"}>
-              Learn NativeBase
-            </Text>
-          </Link>
-          <ToggleDarkMode />
-        </VStack>
-      </Center>
-    </NativeBaseProvider>
-  );
+const reducerPersisConfig: PersistConfig<State> = {
+  key:'cocktail',
+  storage: AsyncStorage,
+  blacklist: ["data", "control", "session"],
+  stateReconciler: autoMergeLevel2
 }
+const middleWare = __DEV__ ?
+  composeWithDevTools(applyMiddleware(
+    thunkMiddleware,
+    logger
+  ))
+  :
+  applyMiddleware(
+    thunkMiddleware
+  )
 
-// Color Switch Component
-function ToggleDarkMode() {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <HStack space={2} alignItems="center">
-      <Text>Dark</Text>
-      <Switch
-        isChecked={colorMode === "light" ? true : false}
-        onToggle={toggleColorMode}
-        aria-label={
-          colorMode === "light" ? "switch to dark mode" : "switch to light mode"
+const persistedReducer = persistReducer(reducerPersisConfig, reducers)
+const store = createStore(persistedReducer, middleWare)
+const persistor = persistStore(store)
+export const theme = extendTheme(
+  {
+    fontConfig:{
+      Rubik:{
+        100:{
+          normal:'Rubik_300Light',
+          italic:'Rubik_300Light_Italic'
+        },
+        200:{
+          normal:'Rubik_400Regular',
+          italic:'Rubik_400Regular_Italic'
+        },
+        300:{
+          normal:'Rubik_500Medium',
+          italic:'Rubik_500Medium_Italic'
+        },
+        400:{
+          normal:'Rubik_700Bold',
+          italic:'Rubik_700Bold_Italic'
         }
-      />
-      <Text>Light</Text>
-    </HStack>
+      }
+    },
+    fonts:{
+      heading:'Rubik',
+      body:'Rubik',
+      mono:'Rubik'
+    },
+  }
   );
+
+const App = () => {
+  let [fontsLoaded] = useFonts({
+    Rubik_300Light,
+    Rubik_300Light_Italic,
+    Rubik_400Regular,
+    Rubik_400Regular_Italic,
+    Rubik_500Medium,
+    Rubik_500Medium_Italic,
+    Rubik_700Bold,
+    Rubik_700Bold_Italic
+  })
+  if (!fontsLoaded){
+    return <AppLoading/>
+  } else{
+    return (
+      <React.Fragment>
+        <Provider store={store}>
+          <PersistGate persistor={persistor}>
+            <NativeBaseProvider theme={theme} config={config}>
+              <SafeAreaProvider>
+                <CocktailApplication/>
+              </SafeAreaProvider>
+            </NativeBaseProvider>
+          </PersistGate>
+        </Provider>
+      </React.Fragment>
+
+    );
+  }
+
 }
+
+export default App
