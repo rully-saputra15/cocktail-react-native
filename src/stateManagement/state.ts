@@ -26,10 +26,11 @@ export interface DrinkDetail {
   id: string;
   title: string;
   alternateDrink: string;
-  tags: string,
+  tags: string;
   category: string;
   glass: string;
   instructions: string;
   thumbnail: string;
-  ingredient: string[],
+  ingredients: string[];
+  measures: string[];
 }

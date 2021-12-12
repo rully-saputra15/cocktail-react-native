@@ -56,6 +56,7 @@ const HomeScreen: React.FC<HomeComponentProps> = (props: HomeComponentProps) => 
                   fontFamily: 'body',
                   fontWeight: '300',
                   fontSize: "md",
+                  textAlign:"center",
                   color: "black",
                 }}>
           <Image source={{ uri: item.thumbnail }} resizeMode="cover" borderRadius={100} size="md" alt={item.title}/>

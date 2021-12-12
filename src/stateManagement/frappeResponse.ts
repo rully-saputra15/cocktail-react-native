@@ -22,17 +22,24 @@ export const formatDrinkDetail = (unformattedDrinkDetail : any): DrinkDetail => 
     glass: unformattedDrinkDetail.strGlass,
     instructions: unformattedDrinkDetail.strInstructions,
     thumbnail: unformattedDrinkDetail.strDrinkThumb,
-    ingredient: [],
+    ingredients: formatDrinkIngredients(unformattedDrinkDetail),
+    measures:formatDrinkMeasure(unformattedDrinkDetail)
   }
 }
 
 export const formatDrinkIngredients = (unformattedingredients: any): string[] => {
   let ingredients: string[] = [];
-  let i = 1;
-  while(1){
-    const key = `strIngredient${i}`;
-    if(unformattedingredients[key] == null) break;
-    ingredients.push(unformattedingredients[key])
+  for(let i = 1 ; i <= 15 ; i++){
+    ingredients.push(unformattedingredients['strIngredient' + i])
   }
   return ingredients
 }
+
+export const formatDrinkMeasure = (unformattedingredients: any): string[] => {
+  let ingredients: string[] = [];
+  for(let i = 1 ; i <= 15 ; i++){
+    ingredients.push(unformattedingredients['strMeasure' + i])
+  }
+  return ingredients
+}
+

@@ -6,12 +6,14 @@ import { useRoute } from "@react-navigation/native";
 import { fetchDrinkDetail } from "../actions/actions";
 
 interface CocktailDetailScreenContainerProps {
-  drinkDetail: DrinkDetail
+  drinkDetail: DrinkDetail;
+  isFetchingDrinkDetail: boolean;
 }
 
 const mapStateToProps = (state: State) => {
   return{
-    drinkDetail: state.control.drinkDetail
+    drinkDetail: state.control.drinkDetail,
+    isFetchingDrinkDetail: state.session.isFetchingDrinkDetail
   }
 }
 const CocktailDetailScreenContainer = (props: CocktailDetailScreenContainerProps) => {
@@ -19,12 +21,13 @@ const CocktailDetailScreenContainer = (props: CocktailDetailScreenContainerProps
   const dispatch = useDispatch();
   const cocktailId = route.params ? route.params.cocktailId : "";
   const drinkDetail = props.drinkDetail;
+  const isFetchingDrinkDetail = props.isFetchingDrinkDetail;
 
   useEffect(() => {
     dispatch(fetchDrinkDetail(cocktailId))
   },[cocktailId])
 
-  return <CocktailDetailScreen drinkDetail={drinkDetail}/>
+  return <CocktailDetailScreen drinkDetail={drinkDetail} isFetchingDrinkDetail={isFetchingDrinkDetail}/>
 }
 
 export default connect(mapStateToProps)(CocktailDetailScreenContainer)

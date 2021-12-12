@@ -11,7 +11,7 @@ export const HomeStackNavigator = ({navigation} : any) => {
       <Stack.Screen name="Home" component={HomeContainer} options={{headerShown:false}}/>
       <Stack.Screen name="CocktailDetailScreen"
                     component={CocktailDetailScreenContainer}
-                    options={{headerTitle:'Cocktail'}}/>
+                    options={{headerTitle:'',headerBackTitleVisible:false, headerTransparent:true}}/>
     </Stack.Navigator>
   )
 }
